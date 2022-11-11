@@ -15,14 +15,14 @@ class Youtube:
     init_data = np.array([None for i in range(8)]).reshape(1, 8)
     self.Data = pd.DataFrame(init_data, columns=['Id', 'Url', 'Keyword', 'Published At', 'Title', 'Position', 'Channel Title', 'Thumbnail Url']).dropna()
 
-  def get_search_data(self, keyword):
+  def get_search_data(self, keyword, maxResults):
     params = {
     "key": self.API_KEY,
     "q": keyword,
     "part": "snippet",
     "regionCode": self.regionCode,
     "type": "video",
-    "maxResults": "10"
+    "maxResults": maxResults
     }
     res = requests.get("https://youtube.googleapis.com/youtube/v3/search", params = params)
 
@@ -126,7 +126,8 @@ class Youtube:
       video_statistics['Views'].append(video['statistics']['viewCount'])
 
     video_statistics = pd.DataFrame(video_statistics)
-    self.Data = self.Data.join(video_statistics, lsuffix='_caller', rsuffix='_other').drop('Id_other', axis=1)
+    # self.Data = self.Data.join(video_statistics.set_index('Id'), on='Id') # using below approach for faster computation
+    self.Data = pd.merge(self.Data, video_statistics, on='Id', how='left')
 
   def process_kws(self, keywords):
     if "," in keywords:
