@@ -84,6 +84,11 @@
             </div>
           </div>
 
+          <div class="mb-3">
+            <label for="noOfResults">Number of Results: 1</label>
+            <input type="range" class="custom-range" min="1" max="25" id="noOfResults" name="noOfSearchResults" value=1>
+          </div>
+
           <button type="submit" class="btn btn-primary">Submit</button>
 
         </form>
@@ -158,6 +163,14 @@
           var value = textarea.val().replaceAll('\n', ',');
           textarea.val(value)
         }, 0)
+      })
+
+      // For range Number
+      var range = $('#noOfResults')
+
+      range.on('change', () => {
+      var rangeValue = range.val()
+    	$('label')[2].innerHTML = "Number of Results: " + rangeValue
       })
     </script>
   </body>

@@ -27,13 +27,16 @@ def search_youtube_results():
 
     keywords = request.form['keywords']
     api_key = request.form['key']
+    no_of_results = request.form['noOfSearchResults']
 
     if not keywords:
         flash('Keyword(s) are required!')
     elif not api_key:
         flash('api_key is required!')
+    elif not no_of_results:
+        flash('Define number of results you want in your search!')
     else:
-        search = Youtube(api_key)
+        search = Youtube(api_key, no_of_results)
         search.search_videos(keywords)
         return Response(
             search.Data.to_csv(),

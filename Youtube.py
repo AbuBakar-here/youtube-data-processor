@@ -9,20 +9,21 @@ class Youtube:
   regionCode = None
   Data = None
 
-  def __init__(self, key, regionCode = 'US'):
+  def __init__(self, key, maxResults, regionCode = 'US'):
     self.API_KEY = key
     self.regionCode = regionCode
+    self.maxResults = maxResults
     init_data = np.array([None for i in range(8)]).reshape(1, 8)
     self.Data = pd.DataFrame(init_data, columns=['Id', 'Url', 'Keyword', 'Published At', 'Title', 'Position', 'Channel Title', 'Thumbnail Url']).dropna()
 
-  def get_search_data(self, keyword, maxResults):
+  def get_search_data(self, keyword):
     params = {
     "key": self.API_KEY,
     "q": keyword,
     "part": "snippet",
     "regionCode": self.regionCode,
     "type": "video",
-    "maxResults": maxResults
+    "maxResults": self.maxResults
     }
     res = requests.get("https://youtube.googleapis.com/youtube/v3/search", params = params)
 
