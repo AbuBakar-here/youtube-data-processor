@@ -12,8 +12,8 @@
     <!-- Navigation Bar -->
     <nav class="navbar navbar-expand-lg navbar-light" style="background-color: #e3f2fd;">
       <a class="navbar-brand" href="#">
-        <img src="https://getbootstrap.com/docs/4.1/assets/brand/bootstrap-solid.svg" width="30" height="30" class="d-inline-block align-top" alt="">
-        Bootstrap
+        <img src="./static/images/youtube-logo.png" width="45" height="30" class="d-inline-block align-top" alt="">
+        Data Processor
       </a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -33,16 +33,6 @@
     </nav>
 
     <!-- Main Content -->
-
-    <!-- <div class="">
-      <p>For bootstrap forms <a href="https://blog.hubspot.com/website/bootstrap-form-css">Click here</a></p>
-      <br>
-      <p>Pre-made forms <a href="https://colorlib.com/wp/bootstrap-form-templates/">click here</a></p>
-      <br>
-      <p>navigation (header) (to be applied bottom navbar) <a href="https://getbootstrap.com/docs/4.1/components/navbar/">Clicke here</a></p>
-      <br>
-      <p>Pre-made header <a href="https://colorlib.com/wp/bootstrap-header/">Click here</a></p>
-    </div> -->
 
     <!-- bootstrap form -->
     <br><br>
@@ -101,8 +91,6 @@
       </div>
     </div>
 
-
-
     <!-- Modal for API help -->
     <div id="myModal" class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered" role="document">
@@ -124,52 +112,10 @@
       </div>
     </div>
 
-
-
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.3/dist/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+    <script src="./static/js/app.js" charset="utf-8"></script>
 
-
-    <script type="text/javascript">
-
-
-    // For Form validation
-
-      (function() {
-        'use strict';
-        window.addEventListener('load', function() {
-          var forms = document.getElementsByClassName('needs-validation');
-          var validation = Array.prototype.filter.call(forms, function(form) {
-            form.addEventListener('submit', function(event) {
-              if (form.checkValidity() === false) {
-                event.preventDefault();
-                event.stopPropagation();
-              }
-              form.classList.add('was-validated');
-            }, false);
-          });
-        }, false);
-      })();
-
-
-
-      // for showing Modal when Page is loaded
-
-      $(document).ready(() => {
-        $('#myModal').modal('show')
-      })
-
-
-      // for removing newline from textare and replacing it with comma
-      var textarea = $('#textarea-for-keywords')
-
-      textarea.on('paste', () => {
-        setTimeout(() => {
-          var value = textarea.val().replaceAll('\n', ',');
-          textarea.val(value)
-        }, 0)
-      })
-    </script>
   </body>
 </html>

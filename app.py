@@ -7,13 +7,13 @@ from Youtube import Youtube
 
  ####### Start of the App
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder = "./static")
 app.config['SECRET_KEY'] = 'your secret key'
 
 
 @app.route("/")
 def index():
-    return render_template('home.html')
+    return redirect(url_for('youtube_videos_search'))
 
 
 
