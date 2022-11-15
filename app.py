@@ -64,7 +64,7 @@ def channel_search_youtube_results():
     elif not api_key:
         flash('api_key is required!')
     else:
-        search = Youtube(api_key)
+        search = Youtube(api_key, 50)
         search.search_channel_videos(channel_urls)
         return Response(
             search.Data.to_csv(),
@@ -93,7 +93,7 @@ def youtube_rank_tracker_results():
     elif not api_key:
         flash('api_key is required!')
     else:
-        search = Youtube(api_key)
+        search = Youtube(api_key, 10)
         search.search_videos(keywords)
         df = search.Data[search.Data['Channel Title'] == channel_name]
         return Response(
