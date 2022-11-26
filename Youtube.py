@@ -127,8 +127,8 @@ class Youtube:
       video_statistics['Views'].append(video['statistics']['viewCount'])
 
     video_statistics = pd.DataFrame(video_statistics)
-    # self.Data = self.Data.join(video_statistics.set_index('Id'), on='Id') # using below approach for faster computation
-    self.Data = pd.merge(self.Data, video_statistics, on='Id', how='left')
+    # self.Data = self.Data.join(video_statistics.set_index('Id').drop_duplicates(subset=['Id']), on='Id') # using below approach for faster computation
+    self.Data = pd.merge(self.Data, video_statistics.drop_duplicates(subset=['Id']), on='Id', how='left')
 
   def process_kws(self, keywords):
     if "," in keywords:
@@ -152,7 +152,10 @@ class Youtube:
       return _['message']
 
     self.calculate_metrices()
-    self.Data = self.Data.sort_values(by = ['VPH', 'Keyword'], ascending = False)
+
+    # Giving a proper view to Data
+    cols = ['Keyword', 'Position', 'Url', 'Title', 'Thumbnail Url', 'Views', 'VPH', 'Hours since published', 'Channel Title']
+    self.Data = self.Data.sort_values(by = ['VPH'], ascending = False)[cols]
 
     return True
 
@@ -170,8 +173,8 @@ class Youtube:
   def calculate_metrices(self):
     self.Data['Views'] = self.Data['Views'].apply(np.int32)
     self.Data['Published At'] = pd.to_datetime(self.Data['Published At'])
-    self.Data['time_diff_hours'] = self.Data['Published At'].apply(self.time_diff)
-    self.Data['VPH'] = self.Data['Views']/self.Data['time_diff_hours']
+    self.Data['Hours since published'] = self.Data['Published At'].apply(self.time_diff)
+    self.Data['VPH'] = self.Data['Views']/self.Data['Hours since published']
 
   # videos by channel
   def get_channel_videos_data(self, ch_id):
@@ -208,7 +211,10 @@ class Youtube:
       return _['message']
 
     self.calculate_metrices()
-    self.Data = self.Data.sort_values(by = 'VPH', ascending = False)
+
+    # giving a proper view to Data
+    cols = ['Title', 'Url', 'Thumbnail Url', 'Views', 'VPH', 'Hours since published', 'Channel Title']
+    self.Data = self.Data.sort_values(by = 'VPH', ascending = False)[cols]
 
     return True
 

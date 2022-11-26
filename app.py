@@ -39,7 +39,7 @@ def search_youtube_results():
         search = Youtube(api_key, no_of_results)
         search.search_videos(keywords)
         return Response(
-            search.Data.to_csv(),
+            search.Data.to_csv(index=False),
             mimetype="text/csv",
             headers={"Content-disposition": "attachment; filename=search-data.csv"}
                     )
@@ -67,7 +67,7 @@ def channel_search_youtube_results():
         search = Youtube(api_key, 50)
         search.search_channel_videos(channel_urls)
         return Response(
-            search.Data.to_csv(),
+            search.Data.to_csv(index=False),
             mimetype="text/csv",
             headers={"Content-disposition": "attachment; filename=search-data.csv"}
                     )
@@ -97,7 +97,7 @@ def youtube_rank_tracker_results():
         search.search_videos(keywords)
         df = search.Data[search.Data['Channel Title'] == channel_name]
         return Response(
-            df.to_csv(),
+            df.to_csv(index=False),
             mimetype="text/csv",
             headers={"Content-disposition": "attachment; filename=search-data.csv"}
                     )
