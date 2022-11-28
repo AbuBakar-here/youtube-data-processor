@@ -14,7 +14,7 @@ class Youtube:
     self.regionCode = regionCode
     self.maxResults = maxResults
     init_data = np.array([None for i in range(8)]).reshape(1, 8)
-    self.Data = pd.DataFrame(init_data, columns=['Id', 'Url', 'Keyword', 'Published At', 'Title', 'Position', 'Channel Title', 'Thumbnail Url']).dropna()
+    self.Data = pd.DataFrame(init_data, columns=['Id', 'URL', 'Keyword', 'Published At', 'Video Title', 'Rank', 'Channel', 'Thumbnail']).dropna()
 
   def get_search_data(self, keyword):
     params = {
@@ -45,24 +45,24 @@ class Youtube:
 
     processed_data = {
         "Id": [],
-        "Url": [],
+        "URL": [],
         "Keyword": [],
         "Published At": [],
-        "Title": [],
-        "Position": [],
-        "Channel Title": [],
-        "Thumbnail Url": []
+        "Video Title": [],
+        "Rank": [],
+        "Channel": [],
+        "Thumbnail": []
     }
 
     for i in range(len(search_data)):
       processed_data["Id"].append(search_data[i]['id']['videoId'])
-      processed_data["Url"].append("youtube.com/watch?v=" + search_data[i]['id']['videoId'])
+      processed_data["URL"].append("youtube.com/watch?v=" + search_data[i]['id']['videoId'])
       processed_data["Keyword"].append(keyword)
       processed_data["Published At"].append(search_data[i]['snippet']['publishedAt'][:10])
-      processed_data["Title"].append(search_data[i]['snippet']['title'])
-      processed_data["Position"].append(i+1)
-      processed_data["Channel Title"].append(search_data[i]['snippet']['channelTitle'])
-      processed_data["Thumbnail Url"].append(search_data[i]['snippet']['thumbnails']['default']['url'][:-11] + "maxresdefault.jpg")
+      processed_data["Video Title"].append(search_data[i]['snippet']['title'])
+      processed_data["Rank"].append(i+1)
+      processed_data["Channel"].append(search_data[i]['snippet']['channelTitle'])
+      processed_data["Thumbnail"].append(search_data[i]['snippet']['thumbnails']['default']['url'][:-11] + "maxresdefault.jpg")
 
     return pd.DataFrame(processed_data)
 
@@ -94,7 +94,7 @@ class Youtube:
       start = 0
       end = 50
       while True:
-        res = self.get_video_data(self.Data['Id'][start:end])
+        res = self.get_video_data(self.Data['Id'].iloc[start:end])
         if res.status_code != 200:
           return {"status_code": response.status_code, "message": response.json()['error']['message']}
         responses.append(res)
@@ -103,7 +103,7 @@ class Youtube:
         if end > len_of_ids:
           break
       if start+1 < len_of_ids:
-        res = self.get_video_data(self.Data['Id'][start:])
+        res = self.get_video_data(self.Data['Id'].iloc[start:])
         responses.append(res)
 
       response = []
@@ -132,7 +132,7 @@ class Youtube:
 
   def process_kws(self, keywords):
     if "," in keywords:
-      return keywords.split(",")
+      return list(set(keywords.split(",")))
     return [keywords]
 
   def search_videos(self, kws):
@@ -154,8 +154,8 @@ class Youtube:
     self.calculate_metrices()
 
     # Giving a proper view to Data
-    cols = ['Keyword', 'Position', 'Url', 'Title', 'Thumbnail Url', 'Views', 'VPH', 'Hours since published', 'Channel Title']
-    self.Data = self.Data.sort_values(by = ['VPH'], ascending = False)[cols]
+    cols = ['Keyword', 'Rank', 'URL', 'Video Title', 'Thumbnail', 'Views', 'VPH', 'Channel']
+    self.Data = self.Data[cols]
 
     return True
 
@@ -213,8 +213,8 @@ class Youtube:
     self.calculate_metrices()
 
     # giving a proper view to Data
-    cols = ['Title', 'Url', 'Thumbnail Url', 'Views', 'VPH', 'Hours since published', 'Channel Title']
-    self.Data = self.Data.sort_values(by = 'VPH', ascending = False)[cols]
+    channel_search_cols = ['Video Title', 'URL', 'Thumbnail', 'Views', 'VPH', 'Channel']
+    self.Data = self.Data.sort_values(by = 'VPH', ascending = False)[channel_search_cols]
 
     return True
 
@@ -224,7 +224,7 @@ class Youtube:
     ids = []
 
     if "," in urls:
-      urls = urls.split(",")
+      urls = list(set(urls.split(",")))
     else:
       urls = [urls]
 
@@ -236,3 +236,15 @@ class Youtube:
         ids.append(id)
 
     return ids
+
+  # rank tracker
+  def rank_tracker(self, kws, channel_handle):
+
+    url = "https://www.youtube.com/@" + channel_handle
+    res = requests.get(url.strip())
+
+    if res.status_code == 200:
+      soup = BeautifulSoup(res.text, 'html.parser')
+      channel_name = soup.find("title").text[:-10]
+      self.search_videos(kws)
+      self.Data = self.Data[self.Data['Channel'] == channel_name]
