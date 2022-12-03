@@ -1,8 +1,8 @@
 import numpy as np
 from flask import Flask, render_template, request, Response, flash, url_for, redirect
-from werkzeug.utils import secure_filename
 import pandas as pd
 from Youtube import Youtube
+from datetime import datetime
 
 
  ####### Start of the App
@@ -39,7 +39,7 @@ def search_youtube_results():
         search = Youtube(api_key, no_of_results)
         search.search_videos(keywords)
         return Response(
-            search.Data.to_csv(index=False),
+            datetime.today().strftime("%d %B %Y") + "\n\n" + search.Data.to_csv(index=False),
             mimetype="text/csv",
             headers={"Content-disposition": "attachment; filename=search-data.csv"}
                     )
@@ -71,7 +71,7 @@ def channel_search_youtube_results():
         search = Youtube(api_key, no_of_results)
         search.search_channel_videos(channel_urls)
         return Response(
-            search.Data.to_csv(index=False),
+            datetime.today().strftime("%d %B %Y") + "\n\n" + search.Data.to_csv(index=False),
             mimetype="text/csv",
             headers={"Content-disposition": "attachment; filename=search-data.csv"}
                     )
@@ -104,7 +104,7 @@ def youtube_rank_tracker_results():
         search = Youtube(api_key, no_of_results)
         search.rank_tracker(keywords, channel_handle)
         return Response(
-            search.Data.to_csv(index=False),
+            datetime.today().strftime("%d %B %Y") + "\n\n" + search.Data.to_csv(index=False),
             mimetype="text/csv",
             headers={"Content-disposition": "attachment; filename=search-data.csv"}
                     )

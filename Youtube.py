@@ -13,8 +13,8 @@ class Youtube:
     self.API_KEY = key
     self.regionCode = regionCode
     self.maxResults = maxResults
-    init_data = np.array([None for i in range(8)]).reshape(1, 8)
-    self.Data = pd.DataFrame(init_data, columns=['Id', 'URL', 'Keyword', 'Published At', 'Video Title', 'Rank', 'Channel', 'Thumbnail']).dropna()
+    init_data = np.array([None for i in range(9)]).reshape(1, 9)
+    self.Data = pd.DataFrame(init_data, columns=['Id', 'URL', 'Keyword', 'Published At', 'Video Title', 'Rank', 'Channel', 'Thumbnail', 'Channel Url']).dropna()
 
   def get_search_data(self, keyword):
     params = {
@@ -51,18 +51,20 @@ class Youtube:
         "Video Title": [],
         "Rank": [],
         "Channel": [],
-        "Thumbnail": []
+        "Thumbnail": [],
+        "Channel Url": []
     }
 
     for i in range(len(search_data)):
       processed_data["Id"].append(search_data[i]['id']['videoId'])
-      processed_data["URL"].append("youtube.com/watch?v=" + search_data[i]['id']['videoId'])
+      processed_data["URL"].append("https://www.youtube.com/watch?v=" + search_data[i]['id']['videoId'])
       processed_data["Keyword"].append(keyword)
       processed_data["Published At"].append(search_data[i]['snippet']['publishedAt'][:10])
       processed_data["Video Title"].append(search_data[i]['snippet']['title'])
       processed_data["Rank"].append(i+1)
       processed_data["Channel"].append(search_data[i]['snippet']['channelTitle'])
       processed_data["Thumbnail"].append(search_data[i]['snippet']['thumbnails']['default']['url'][:-11] + "maxresdefault.jpg")
+      processed_data['Channel Url'].append("https://www.youtube.com/channel/" + search_data[i]['snippet']['channelId'])
 
     return pd.DataFrame(processed_data)
 
@@ -154,7 +156,7 @@ class Youtube:
     self.calculate_metrices()
 
     # Giving a proper view to Data
-    cols = ['Keyword', 'Rank', 'URL', 'Video Title', 'Thumbnail', 'Views', 'VPH', 'Channel']
+    cols = ['Keyword', 'Rank', 'URL', 'Video Title', 'Thumbnail', 'Views', 'VPH', 'Channel', 'Channel Url']
     self.Data = self.Data[cols]
 
     return True
@@ -213,7 +215,7 @@ class Youtube:
     self.calculate_metrices()
 
     # giving a proper view to Data
-    channel_search_cols = ['Video Title', 'URL', 'Thumbnail', 'Views', 'VPH', 'Channel']
+    channel_search_cols = ['Video Title', 'URL', 'Thumbnail', 'Views', 'VPH', 'Channel', 'Hours since published', 'Channel Url']
     self.Data = self.Data.sort_values(by = 'VPH', ascending = False)[channel_search_cols]
 
     return True
@@ -247,4 +249,17 @@ class Youtube:
       soup = BeautifulSoup(res.text, 'html.parser')
       channel_name = soup.find("title").text[:-10]
       self.search_videos(kws)
-      self.Data = self.Data[self.Data['Channel'] == channel_name]
+
+      channel_video_rank = self.Data[self.Data['Channel'] == channel_name]
+
+      cols = self.Data.columns.tolist()
+      cols.remove("Keyword")
+
+      for col in cols:
+        self.Data[col] = self.Data[col].apply(self.nothing)
+
+      self.Data = pd.concat([channel_video_rank, self.Data]).drop_duplicates(subset=['Keyword']).drop('Channel Url', axis = 1)
+
+  # utility function for rank_tracker method
+  def nothing(self, x):
+    return "N/A"
